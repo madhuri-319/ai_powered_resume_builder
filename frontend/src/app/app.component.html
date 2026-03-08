@@ -1,0 +1,16 @@
+<div style="max-width: 600px; margin: 50px auto; font-family: sans-serif;">
+  <h2>AI Agent Chat</h2>
+  
+  <div class="chat-box">
+    <div *ngFor="let msg of chatHistory" [style.margin-bottom.px]="10">
+      <strong>{{msg.role}}:</strong> {{msg.text}}
+    </div>
+    <div *ngIf="loading"><em>AI is thinking...</em></div>
+  </div>
+
+  <div style="margin-top: 20px;">
+    <input [(ngModel)]="userMessage" (keyup.enter)="sendMessage()" 
+           placeholder="Type a message..." style="width: 80%; padding: 10px;">
+    <button (click)="sendMessage()" style="padding: 10px;">Send</button>
+  </div>
+</div>
