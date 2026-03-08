@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, ViewChild, ElementRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ChatService } from './service/chat.service';
@@ -8,7 +8,7 @@ import { ChatService } from './service/chat.service';
   standalone: true,
   imports: [CommonModule, FormsModule],
   templateUrl: './app.component.html',
-  styles: [`.chat-box { height: 400px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; }`]
+  styleUrls: ['./app.component.scss'] // Link the new CSS here
 })
 export class AppComponent {
   userMessage = '';
@@ -17,21 +17,21 @@ export class AppComponent {
 
   constructor(private chatService: ChatService) {}
 
-  async sendMessage() {
-    if (!this.userMessage.trim()) return;
+  sendMessage() {
+    if (!this.userMessage.trim() || this.loading) return;
 
-    this.chatHistory.push({ role: 'You', text: this.userMessage });
-    const currentPrompt = this.userMessage;
+    const userText = this.userMessage;
+    this.chatHistory.push({ role: 'You', text: userText });
     this.userMessage = '';
     this.loading = true;
 
-    this.chatService.sendToAI(currentPrompt).subscribe({
+    this.chatService.sendToAI(userText).subscribe({
       next: (res) => {
         this.chatHistory.push({ role: 'AI', text: res.reply });
         this.loading = false;
       },
       error: () => {
-        this.chatHistory.push({ role: 'Error', text: 'Failed to reach backend.' });
+        this.chatHistory.push({ role: 'Error', text: 'Backend unavailable. Is FastAPI running?' });
         this.loading = false;
       }
     });

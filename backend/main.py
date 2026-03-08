@@ -1,55 +1,103 @@
 import os
+import uuid
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
-from google import genai
 from dotenv import load_dotenv
 
-# 1. Load your API Key from .env file
+from google.adk import Runner
+from google.adk.sessions import InMemorySessionService
+from google.genai import types
+
+from agents.query_agent import root_agent
+
 load_dotenv()
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
 app = FastAPI()
 
-# 2. Enable CORS so Angular can talk to FastAPI
+# -----------------------------
+# CORS
+# -----------------------------
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:4200"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
 )
 
-# 3. Initialize Gemini Client
-client = genai.Client(api_key=GEMINI_API_KEY)
-MODEL_NAME = "models/gemini-2.5-flash" # Optimized for 2026 speed
+# -----------------------------
+# ADK Runner Setup
+# -----------------------------
+session_service = InMemorySessionService()
 
+runner = Runner(
+    app_name="SkillFlow_AI",
+    agent=root_agent,
+    session_service=session_service
+)
+
+APP_NAME = "SkillFlow_AI"
+
+# -----------------------------
+# Request Model
+# -----------------------------
 class ChatRequest(BaseModel):
     prompt: str
+    user_id: str = "default_user"
+    session_id: str | None = None
 
-# Optional: Store history in memory (Reset when server restarts)
-chat_history = []
 
+# -----------------------------
+# Chat Endpoint
+# -----------------------------
 @app.post("/api/chat")
-async def chat_endpoint(request: ChatRequest):
-    global chat_history
-    try:
-        # Add user message to history
-        chat_history.append({"role": "user", "parts": [{"text": request.prompt}]})
+async def chat(request: ChatRequest):
 
-        # Generate content using your working Colab logic
-        response = client.models.generate_content(
-            model=MODEL_NAME,
-            contents=chat_history
+    try:
+
+        user_id = request.user_id
+
+        # generate session if not provided
+        session_id = request.session_id or str(uuid.uuid4())
+
+        # ALWAYS create session (safe for InMemorySessionService)
+        await session_service.create_session(
+            user_id=user_id,
+            session_id=session_id,
+            app_name=APP_NAME
         )
 
-        reply = response.text
-        
-        # Add AI response to history to maintain context
-        chat_history.append({"role": "model", "parts": [{"text": reply}]})
+        # convert user message
+        user_message = types.Content(
+            role="user",
+            parts=[types.Part.from_text(text=request.prompt)]
+        )
 
-        return {"reply": reply}
+        events = runner.run(
+            user_id=user_id,
+            session_id=session_id,
+            new_message=user_message
+        )
+
+        reply = ""
+
+        for event in events:
+
+            if hasattr(event, "text") and event.text:
+                reply += event.text
+
+            elif hasattr(event, "content"):
+                if hasattr(event.content, "parts"):
+                    for part in event.content.parts:
+                        if hasattr(part, "text"):
+                            reply += part.text
+
+        return {
+            "session_id": session_id,
+            "reply": reply
+        }
 
     except Exception as e:
-        print(f"Error: {e}")
+        print("ERROR:", e)
         raise HTTPException(status_code=500, detail=str(e))
