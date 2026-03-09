@@ -1,0 +1,136 @@
+:host {
+  --sidebar-bg: #202123;
+  --main-bg: #343541;
+  --user-bg: #343541;
+  --ai-bg: #444654;
+  --accent: #10a37f;
+  --text: #ececf1;
+}
+
+/* 1. Fix the entire screen */
+.app-container {
+  display: flex;
+  height: 100vh;
+  width: 100vw;
+  overflow: hidden; /* Prevents whole-page scrolling */
+  background-color: var(--main-bg);
+  color: var(--text);
+  font-family: 'Inter', sans-serif;
+}
+
+/* 2. Sidebar styling */
+.sidebar {
+  width: 260px;
+  background-color: var(--sidebar-bg);
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
+
+.new-chat-btn {
+  background: transparent;
+  border: 1px solid #4d4d4f;
+  color: white;
+  padding: 12px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin-bottom: 20px;
+}
+
+/* 3. Main content area */
+.chat-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  position: relative;
+}
+
+.chat-header {
+  padding: 15px;
+  text-align: center;
+  border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+/* 4. The Scrollable Chat Box */
+.chat-box {
+  flex: 1;
+  overflow-y: auto; /* Allow vertical scroll */
+  overflow-x: hidden; /* BLOCK horizontal scroll */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Message Rows */
+.user-row, .ai-row {
+  width: 100%;
+  padding: 24px 0;
+}
+
+.user-row { background-color: var(--user-bg); }
+.ai-row { background-color: var(--ai-bg); }
+
+.msg-container {
+  max-width: 750px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.role-label {
+  display: block;
+  font-size: 12px;
+  color: #8e8ea0;
+  margin-bottom: 8px;
+  text-transform: uppercase;
+}
+
+/* 5. Critical Text Wrapping Logic */
+.msg-text {
+  line-height: 1.6;
+  word-wrap: break-word;     /* Legacy support */
+  overflow-wrap: break-word; /* Modern wrapping */
+  white-space: pre-wrap;     /* Preserves formatting but wraps */
+}
+
+/* 6. Input Area */
+.input-area {
+  padding: 20px;
+  background-image: linear-gradient(transparent, var(--main-bg) 50%);
+}
+
+.input-wrapper {
+  max-width: 750px;
+  margin: 0 auto;
+  display: flex;
+  background: #40414f;
+  border-radius: 12px;
+  padding: 10px 15px;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+
+input {
+  flex: 1;
+  background: transparent;
+  border: none;
+  color: white;
+  outline: none;
+  font-size: 16px;
+}
+
+button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+/* Loading Animation */
+.loading-dots span {
+  width: 8px; height: 8px;
+  margin: 0 3px;
+  background: #8e8ea0;
+  border-radius: 50%;
+  display: inline-block;
+  animation: bounce 1.4s infinite ease-in-out both;
+}
+@keyframes bounce { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }

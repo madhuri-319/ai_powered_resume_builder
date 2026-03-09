@@ -1,0 +1,46 @@
+<div class="app-container">
+  <aside class="sidebar">
+    <button class="new-chat-btn">+ New Chat</button>
+    <div class="history-list">
+      <div class="history-item active">Current Session</div>
+    </div>
+  </aside>
+
+  <main class="chat-main">
+    <header class="chat-header">
+      <h2>AI Agent Assistant</h2>
+    </header>
+
+    <div class="chat-box" #scrollContainer>
+      <div *ngFor="let msg of chatHistory" 
+           [ngClass]="{'user-row': msg.role === 'You', 'ai-row': msg.role === 'AI'}">
+        <div class="msg-container">
+          <strong class="role-label">{{msg.role}}</strong>
+          <div class="msg-text">{{msg.text}}</div>
+        </div>
+      </div>
+      
+      <div *ngIf="loading" class="ai-row">
+        <div class="msg-container">
+          <div class="loading-dots">
+            <span></span><span></span><span></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="input-area">
+      <div class="input-wrapper">
+        <input [(ngModel)]="userMessage" 
+               (keyup.enter)="sendMessage()" 
+               placeholder="How can I help you today?" 
+               [disabled]="loading">
+        <button (click)="sendMessage()" [disabled]="loading || !userMessage.trim()">
+          <svg viewBox="0 0 24 24" width="20" height="20">
+            <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z" fill="currentColor"></path>
+          </svg>
+        </button>
+      </div>
+    </footer>
+  </main>
+</div>
