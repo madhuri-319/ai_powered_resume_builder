@@ -1,6 +1,21 @@
 <div class="app-container">
   <aside class="sidebar">
     <button class="new-chat-btn">+ New Chat</button>
+
+    <label class="upload-resume-btn">
+      <input type="file"
+            accept=".pdf,.doc,.docx"
+            (change)="onResumeSelected($event)"
+            hidden>
+
+      <svg class="upload-icon" viewBox="0 0 24 24">
+        <path fill="currentColor"
+          d="M5 20h14v-2H5v2zM12 2l-5.5 5.5 1.42 1.42L11 5.84V16h2V5.84l3.08 3.08 1.42-1.42L12 2z"/>
+      </svg>
+
+      <span>Upload Resume</span>
+    </label>
+
     <div class="history-list">
       <div class="history-item active">Current Session</div>
     </div>

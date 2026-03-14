@@ -36,4 +36,21 @@ export class AppComponent {
       }
     });
   }
+
+  selectedResume: File | null = null;
+
+  onResumeSelected(event: any) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    this.selectedResume = file;
+
+    // show message in chat UI
+    this.chatHistory.push({
+      role: 'System',
+      text: `Resume uploaded: ${file.name}`
+    });
+
+    console.log("Selected Resume:", file);
+  }
 }
