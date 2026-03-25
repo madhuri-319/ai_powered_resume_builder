@@ -1,4 +1,36 @@
+# Core
 fastapi
-uvicorn
-openai
+uvicorn[standard]
+pydantic
+python-multipart
+
+# Google ADK
+google-adk
+
+# Google Generative AI (Gemini)
+# google-generativeai
 python-dotenv
+
+# MongoDB
+pymongo
+# motor 
+
+# MCP server
+fastmcp
+
+# DOCX and Excelgeneration
+python-docx
+xlsxwriter
+pandas
+
+# PDF reading (for resume extraction)
+PyMuPDF                 # fitz — fast PDF text + image extraction
+
+# Utilities
+# python-jose[cryptography]   # JWT for email tokens (Case 3 later)
+# httpx
+
+# Observability
+langfuse
+opentelemetry-sdk
+opentelemetry-exporter-otlp-proto-http 
